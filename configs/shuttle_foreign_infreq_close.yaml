@@ -1,0 +1,45 @@
+# Site + Plant Parameters
+site:
+  depth: 22.5
+  distance: 60
+  distance_to_landfall: 35
+  mean_windspeed: 9
+plant:
+  layout: grid
+  num_turbines: 50
+  row_spacing: 7
+  substation_distance: 1
+  turbine_spacing: 7
+landfall:
+  interconnection_distance: 3
+  trench_length: 2
+turbine: 15MW_generic
+# Vessels
+array_cable_install_vessel: example_cable_lay_vessel
+export_cable_install_vessel: example_cable_lay_vessel
+export_cable_bury_vessel: example_cable_lay_vessel
+oss_install_vessel: example_heavy_lift_vessel
+spi_vessel: example_scour_protection_vessel
+# Module Specific
+MonopileInstallation:
+  #feeder: example_heavy_feeder
+  wtiv: ffiv_foreign_6kits
+  #num_feeders: 1
+  site:
+      Distance: 800
+TurbineInstallation:
+  feeder: example_heavy_feeder_6kits
+  wtiv: wtiv_foreign_3kits
+  site:
+      Distance: 60
+# Configured Phases
+design_phases:
+- MonopileDesign
+install_phases:
+  MonopileInstallation: 0
+  TurbineInstallation: 0
+# Project Inputs
+project_parameters:
+  turbine_capex: 1500
+  commissioning: 0.01
+  decommissioning: 0.15
