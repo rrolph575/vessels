@@ -26,14 +26,14 @@ MonopileInstallation:
   feeder: heavy_monopile_feeder_4kits
   wtiv: ffiv_foreign_4kits
   site:
-      Distance: 60
+      distance: 60
   num_feeders: 2
 TurbineInstallation:
   feeder: example_heavy_feeder_3kits
   wtiv: wtiv_foreign_3kits
   num_feeders: 2
   site:
-      Distance: 60
+      distance: 60
 # Configured Phases
 design_phases:
 - MonopileDesign

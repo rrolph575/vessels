@@ -22,15 +22,13 @@ oss_install_vessel: example_heavy_lift_vessel
 spi_vessel: example_scour_protection_vessel
 # Module Specific
 MonopileInstallation:
-  #feeder: example_heavy_feeder
   wtiv: ffiv_american_4kits
-  #num_feeders: 1
   site:
-      Distance: 60
+      distance: 60
 TurbineInstallation:
   wtiv: wtiv_american_3kits
   site:
-      Distance: 60
+      distance: 60
 # Configured Phases
 design_phases:
 - MonopileDesign

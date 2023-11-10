@@ -24,16 +24,16 @@ spi_vessel: example_scour_protection_vessel
 # Module Specific
 MonopileInstallation:
   feeder: heavy_monopile_feeder_6kits
-  wtiv: ffiv_foreign_4kits
+  wtiv: ffiv_foreign_6kits
   site:
-      Distance: 60
+      distance: 60
   num_feeders: 2
 TurbineInstallation:
   feeder: example_heavy_feeder_6kits
-  wtiv: wtiv_foreign_3kits
+  wtiv: wtiv_foreign_6kits
   num_feeders: 2
   site:
-      Distance: 60
+      distance: 60
 # Configured Phases
 design_phases:
 - MonopileDesign

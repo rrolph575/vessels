@@ -14,6 +14,7 @@ import pandas as pd
 pd.set_option('display.max_columns', 10)
 import os
 import openpyxl
+import matplotlib.pyplot as plt
 
 from ORBIT import ProjectManager, load_config
 from ORBIT.core.library import initialize_library
@@ -39,7 +40,7 @@ total_turbine_installation_time_months = np.empty(8)
 substructure_installation_cost = np.empty(8)
 turbine_installation_cost = np.empty(8)
 
-#for f in ['feeder_strategy_3kits.yaml']:
+#for i,f in enumerate(['shuttle_foreign_infreq_close.yaml', 'shuttle_foreign_infreq_far.yaml']):
 for i,f in enumerate(os.listdir('configs/')):
     config_yaml_file = os.path.join('configs/', f)
     
@@ -49,7 +50,8 @@ for i,f in enumerate(os.listdir('configs/')):
     config = load_config(config_yaml_file)
     
     mod_config = {
-        'install_phases': ['MonopileInstallation', 'TurbineInstallation'] #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
+        'install_phases': ['MonopileInstallation', 'TurbineInstallation'], #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
+        'turbine': '15MW_generic_4sections'
          }
     
     ## append mod_config to config
@@ -93,13 +95,37 @@ for i,f in enumerate(os.listdir('configs/')):
     total_turbine_installation_time_months[i] = turbine_duration / (8760/12) # convert from hours to months
     
     names.append(name)
-
-
+    
+    print(name)
+    print(df.loc[df['action']=='Transit'].count())
+    
+    transit_df = df.loc[df['action']=='Transit']
+    print('Total transit time for monopile installation '+ name + ':')
+    print(transit_df['duration'].sum())
+    
 #return project
 
-df_install_times = pd.DataFrame(data={'Scenario_name': names, 'Monopile_install_time_months': total_monopile_installation_time_months, 'Turbine_install_time_months': total_turbine_installation_time_months, 'Substructure_install_cost': substructure_installation_cost, 'Turbine_install_cost': turbine_installation_cost})
+df_install_times_and_cost = pd.DataFrame(data={'Scenario_name': names, 'Monopile_install_time_months': total_monopile_installation_time_months, 'Turbine_install_time_months': total_turbine_installation_time_months, 'Substructure_install_cost': substructure_installation_cost, 'Turbine_install_cost': turbine_installation_cost})
+
+df_install_times_and_cost = df_install_times_and_cost.set_index('Scenario_name')
+
                                 
-print(df_install_times)
+print(df_install_times_and_cost)
+df_install_times_and_cost.to_csv('df_install_times_and_cost.csv')
+
+
+fig = plt.figure()
+df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='bar', ax = fig.gca())
+plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
+fig.savefig('install_cost_comparison.png', bbox_inches='tight')
+
+
+fig = plt.figure()
+df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months']].plot(kind='bar', ax = fig.gca())
+plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
+fig.savefig('install_time_comparison.png', bbox_inches='tight')
+
+
 
 
 
