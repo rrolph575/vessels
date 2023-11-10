@@ -32,10 +32,12 @@ total_capex = {}
 installation_times = {}
 installation_capex = {}
 capex_breakdown_per_kW = {}
-names = {}
+names = []
 
-total_monopile_installation_time_if_all_steps_happened_sequentially = np.empty(8)
-total_turbine_installation_time_if_all_steps_happened_sequentially = np.empty(8)
+total_monopile_installation_time_months = np.empty(8)
+total_turbine_installation_time_months = np.empty(8)
+substructure_installation_cost = np.empty(8)
+turbine_installation_cost = np.empty(8)
 
 #for f in ['feeder_strategy_3kits.yaml']:
 for i,f in enumerate(os.listdir('configs/')):
@@ -57,13 +59,13 @@ for i,f in enumerate(os.listdir('configs/')):
     project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
     project.run()
     
-    print(project.detailed_outputs)
+    #print(project.detailed_outputs)
     project.detailed_outputs['total_monopile_mass']/num_turbines
 
     ## Categorize project actions
     df = pd.DataFrame(project.actions)
     action_phases = df['phase']
-    print('Phases are: ' + action_phases.unique())
+    #print('Phases are: ' + action_phases.unique())
     # df['action'] #### look through dataframe and see if monopile installation happens always before turbine installation !!! 
     
 
@@ -73,30 +75,33 @@ for i,f in enumerate(os.listdir('configs/')):
     installation_times[name] = project.project_time
     installation_capex[name] = project.installation_capex
     capex_breakdown_per_kW[name] = project.capex_breakdown_per_kw
+    substructure_installation_cost[i] = capex_breakdown_per_kW[name].get('Substructure Installation')
+    turbine_installation_cost[i] = capex_breakdown_per_kW[name].get('Turbine Installation')
 
     ## write to excel file to use as input to gantt chart script
     time_str = pd.to_datetime(WEATHER.index[0])
     df.to_excel('action_logs/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.xlsx', index=False)  
     
-    print('\n \n Below summary is for the ' + name + ': \n \n')
+    #print('\n \n Below summary is for the ' + name + ': \n \n')
 
     monopiles = df.loc[df["phase"]=="MonopileInstallation"]  # Filter actions table to the MonopileInstallation phase.
-    monopile_duration = monopiles['time'].iloc[-1] - monopiles['time'].iloc[0] # Subtract first and last time stamp
+    monopile_duration = monopiles['time'].iloc[-1] - monopiles['time'].iloc[0] # Subtract first and last time stamp. Time is in hours
     turbines = df.loc[df["phase"]=="TurbineInstallation"]  # Filter actions table to the TurbineInstallation phase.
     turbine_duration = turbines['time'].iloc[-1] - turbines['time'].iloc[0]
  
-    total_monopile_installation_time_if_all_steps_happened_sequentially[i] = monopile_duration / (8760/12) # convert from hours to months
-    total_turbine_installation_time_if_all_steps_happened_sequentially[i] = turbine_duration / (8760/12) # convert from hours to months
+    total_monopile_installation_time_months[i] = monopile_duration / (8760/12) # convert from hours to months
+    total_turbine_installation_time_months[i] = turbine_duration / (8760/12) # convert from hours to months
     
-    names[i] = name
+    names.append(name)
 
 
 #return project
 
-print('Monopile installation time (months): ')
-print(total_monopile_installation_time_if_all_steps_happened_sequentially)  # Can we simply these variable names?
-print('Turbine installation time (months): ')
-print(total_turbine_installation_time_if_all_steps_happened_sequentially)
+df_install_times = pd.DataFrame(data={'Scenario_name': names, 'Monopile_install_time_months': total_monopile_installation_time_months, 'Turbine_install_time_months': total_turbine_installation_time_months, 'Substructure_install_cost': substructure_installation_cost, 'Turbine_install_cost': turbine_installation_cost})
+                                
+print(df_install_times)
+
+
 
 
 
