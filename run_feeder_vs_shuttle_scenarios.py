@@ -80,52 +80,23 @@ for i,f in enumerate(os.listdir('configs/')):
     
     print('\n \n Below summary is for the ' + name + ': \n \n')
 
-
-
-    ### Select an installation step
-    phase = 'MonopileInstallation'
-    df = pd.DataFrame(project.actions)
-    df.phase.unique()
-    sub = df.loc[df['phase']==phase]
-    # Number of times for every action
-    #sub.groupby('action').count()['time']
-
-    # display action and duration
-    sub[['action', 'duration']].head(30)
-    # groupby a selected action to make it more reeadable and sum it all together
-    # .... but some of these are happening at the same time... but if there is only one AHV then it should happen relatively sequentially.. 
-    total_monopile_installation_time_if_all_steps_happened_sequentially[i] = sub.groupby('action').sum()['duration'].sum()
-
-
-    ### to take a look at the vessels
-    #df.agent.unique()
-    # to take a look at the vessels used in the substructure assembly and tow out:
-    #sub[['action','agent','duration']]
-
-
-    ### Select an installation step
-    phase = 'TurbineInstallation'
-    df = pd.DataFrame(project.actions)
-    df.phase.unique()
-    sub = df.loc[df['phase']==phase]
-    # Number of times for every action
-    #sub.groupby('action').count()['time']
-
-    # display action and duration
-    sub[['action', 'duration']].head(30)
-    # groupby a selected action to make it more reeadable and sum it all together
-    # .... but some of these are happening at the same time... but if there is only one AHV then it should happen relatively sequentially.. 
-    total_turbine_installation_time_if_all_steps_happened_sequentially[i] = sub.groupby('action').sum()['duration'].sum()
-
-    print('NOTE:::: you cannot sum all of these and get total project time becuase some of these steps could be happening at the same time, especially if you have multiple vessels.')
+    monopiles = df.loc[df["phase"]=="MonopileInstallation"]  # Filter actions table to the MonopileInstallation phase.
+    monopile_duration = monopiles['time'].iloc[-1] - monopiles['time'].iloc[0] # Subtract first and last time stamp
+    turbines = df.loc[df["phase"]=="TurbineInstallation"]  # Filter actions table to the TurbineInstallation phase.
+    turbine_duration = turbines['time'].iloc[-1] - turbines['time'].iloc[0]
+ 
+    total_monopile_installation_time_if_all_steps_happened_sequentially[i] = monopile_duration / (8760/12) # convert from hours to months
+    total_turbine_installation_time_if_all_steps_happened_sequentially[i] = turbine_duration / (8760/12) # convert from hours to months
     
     names[i] = name
 
 
 #return project
 
-
-
+print('Monopile installation time (months): ')
+print(total_monopile_installation_time_if_all_steps_happened_sequentially)  # Can we simply these variable names?
+print('Turbine installation time (months): ')
+print(total_turbine_installation_time_if_all_steps_happened_sequentially)
 
 
 
