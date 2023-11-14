@@ -82,7 +82,8 @@ for i,f in enumerate(os.listdir('configs/')):
 
     ## write to excel file to use as input to gantt chart script
     time_str = pd.to_datetime(WEATHER.index[0])
-    df.to_excel('action_logs/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.xlsx', index=False)  
+    df.to_excel('action_logs/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.xlsx', index=False) 
+    df.to_csv('action_logs_csv/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.csv', index=False)
     
     #print('\n \n Below summary is for the ' + name + ': \n \n')
 
