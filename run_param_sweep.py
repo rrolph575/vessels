@@ -37,142 +37,86 @@ capex_breakdown_per_kW = []
 installation_times = []
 
 # Select baseline config and config to sweep over
-baseline_config = 'configs/shuttle_amer_freq'
-sweep_config = 'configs/feeder_freq'
+baseline_config = 'configs/shuttle_amer_freq.yaml'
+sweep_config = 'configs/feeder_freq.yaml'
 
 # Define parameter sweep
-param_vals = {
-    'site_position_time': [40, 20, 10]
-}
+site_position_vals = [40, 35, 30, 25, 20, 15, 10, 5] # site_position_time
 
 # Define method to run ORBIT and output appropriate variables
-def orbit_run(config, LIBRARY=LIBRARY, WEATHER=WEATHER):
-    project = ProjectManager(config, library_path=LIBRARY, weather=WEATHER)
-    project.run()
+def orbit_run(config, param_val=None, LIBRARY=LIBRARY, WEATHER=WEATHER):
     
-    #print(project.detailed_outputs)
-    project.detailed_outputs['total_monopile_mass']/num_turbines
-
-    ## Categorize project actions
-    df = pd.DataFrame(project.actions)
-    action_phases = df['phase']
-    #print('Phases are: ' + action_phases.unique())
-    # df['action'] #### look through dataframe and see if monopile installation happens always before turbine installation !!! 
-
-    # Collect Results
-    installation_times += [project.project_time / (8760/12)]
-    capex_breakdown_per_kW += [project.capex_breakdown_per_kw]
-    substructure_installation_cost += [project.capex_breakdown_per_kw['Substructure Installation']]
-    turbine_installation_cost += [project.capex_breakdown_per_kw['Turbine Installation']]
-
-    ## write to excel file to use as input to gantt chart script
-    time_str = pd.to_datetime(WEATHER.index[0])
-    df.to_excel('action_logs/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.xlsx', index=False) 
-    df.to_csv('action_logs_csv/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.csv', index=False)
-    
-    #print('\n \n Below summary is for the ' + name + ': \n \n')
-
-    monopiles = df.loc[df["phase"]=="MonopileInstallation"]  # Filter actions table to the MonopileInstallation phase.
-    monopile_duration = monopiles['time'].iloc[-1] - monopiles['time'].iloc[0] # Subtract first and last time stamp. Time is in hours
-    turbines = df.loc[df["phase"]=="TurbineInstallation"]  # Filter actions table to the TurbineInstallation phase.
-    turbine_duration = turbines['time'].iloc[-1] - turbines['time'].iloc[0]
-
-    total_monopile_installation_time_months += [monopile_duration / (8760/12)] # convert from hours to months
-    total_turbine_installation_time_months += [turbine_duration / (8760/12)] # convert from hours to months
-    
-
-
-for i,f in enumerate(os.listdir('configs/')):
-    config_yaml_file = os.path.join('configs/', f)
-    
-    if os.path.isfile(config_yaml_file):
-        name, extension = os.path.splitext(f)
-
-    config = load_config(config_yaml_file)
+    config = load_config(config)
     
     mod_config = {
-        'install_phases': ['MonopileInstallation', 'TurbineInstallation'], #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
+        'install_phases': {
+            'MonopileInstallation': '05/01/2010', 
+            'TurbineInstallation': ('MonopileInstallation', 1)
+            }, #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
         'turbine': '15MW_generic_4sections'
         }
     
     ## append mod_config to config
     run_config = ProjectManager.merge_dicts(config, mod_config)
-    
-    project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
-    project.run()
-    
-    #print(project.detailed_outputs)
-    project.detailed_outputs['total_monopile_mass']/num_turbines
 
-    ## Categorize project actions
-    df = pd.DataFrame(project.actions)
-    action_phases = df['phase']
-    #print('Phases are: ' + action_phases.unique())
-    # df['action'] #### look through dataframe and see if monopile installation happens always before turbine installation !!! 
+    project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
+    if param_val == None:
+        project.run()
+    else:
+        project.run(site_position_time = param_val)
 
     # Collect Results
-    installation_times += [project.project_time / (8760/12)]
-    capex_breakdown_per_kW += [project.capex_breakdown_per_kw]
-    substructure_installation_cost += [project.capex_breakdown_per_kw['Substructure Installation']]
-    turbine_installation_cost += [project.capex_breakdown_per_kw['Turbine Installation']]
+    installation_times = project.project_time / (8760/12)
+    capex_breakdown_per_kW = project.capex_breakdown_per_kw
+    substructure_installation_cost = project.capex_breakdown_per_kw['Substructure Installation']
+    turbine_installation_cost = project.capex_breakdown_per_kw['Turbine Installation']
 
-    ## write to excel file to use as input to gantt chart script
-    time_str = pd.to_datetime(WEATHER.index[0])
-    df.to_excel('action_logs/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.xlsx', index=False) 
-    df.to_csv('action_logs_csv/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.csv', index=False)
-    
-    #print('\n \n Below summary is for the ' + name + ': \n \n')
-
+    df = pd.DataFrame(project.actions)
     monopiles = df.loc[df["phase"]=="MonopileInstallation"]  # Filter actions table to the MonopileInstallation phase.
     monopile_duration = monopiles['time'].iloc[-1] - monopiles['time'].iloc[0] # Subtract first and last time stamp. Time is in hours
     turbines = df.loc[df["phase"]=="TurbineInstallation"]  # Filter actions table to the TurbineInstallation phase.
     turbine_duration = turbines['time'].iloc[-1] - turbines['time'].iloc[0]
 
-    total_monopile_installation_time_months += [monopile_duration / (8760/12)] # convert from hours to months
-    total_turbine_installation_time_months += [turbine_duration / (8760/12)] # convert from hours to months
+    total_monopile_installation_time_months = monopile_duration / (8760/12)  # convert from hours to months
+    total_turbine_installation_time_months = turbine_duration / (8760/12)  # convert from hours to months
     
-    names.append(name)
-    
-    print(name)
-    print(df.loc[df['action']=='Transit'].count())
-    
-    transit_df = df.loc[df['action']=='Transit']
-    print('Total transit time for monopile installation '+ name + ':')
-    print(transit_df['duration'].sum())
-    
-#return project
+    return installation_times, total_monopile_installation_time_months, total_turbine_installation_time_months
 
-df_install_times_and_cost = pd.DataFrame(data={'Scenario_name': names, 
-                                            'Total project installation time': installation_times,
-                                            'Monopile_install_time_months': total_monopile_installation_time_months, 
-                                            'Turbine_install_time_months': total_turbine_installation_time_months, 
-                                            'Substructure_install_cost': substructure_installation_cost, 
-                                            'Turbine_install_cost': turbine_installation_cost})
+# Run baseline
+base_install_time, base_mp_time, base_turb_time = orbit_run(baseline_config)
 
-df_install_times_and_cost = df_install_times_and_cost.set_index('Scenario_name')
+# Loop over parameter values
+install_time = []
+mp_time = []
+turb_time = []
 
-                                
-print(df_install_times_and_cost)
-df_install_times_and_cost.to_csv('df_install_times_and_cost.csv')
+for vi in site_position_vals:
+    i,m,t = orbit_run(sweep_config, param_val=vi)
+    install_time += [i]
+    mp_time += [m]
+    turb_time += [t]  
 
+fig,(ax1,ax2,ax3) = plt.subplots(1,3, figsize=(15,5))
+ax1.axhline(y=base_install_time, linestyle='--', label='Shuttle')
+ax1.plot(site_position_vals, install_time, label='Feeder')
+ax1.set_ylim([0,20])
+ax1.set_ylabel('Project installation time, months')
+ax1.set_xlabel('Site position time, hours')
+ax1.legend()
 
-fig = plt.figure()
-df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='bar', ax = fig.gca())
-plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
-fig.savefig('install_cost_comparison.png', bbox_inches='tight')
+ax2.axhline(y=base_mp_time, linestyle='--', label='Shuttle')
+ax2.plot(site_position_vals, mp_time, label='Feeder')
+ax2.set_ylim([0,20])
+ax2.set_ylabel('Monopile installation time, months')
+ax2.set_xlabel('Site position time, hours')
+ax2.legend()
 
+ax3.axhline(y=base_turb_time, linestyle='--', label='Shuttle')
+ax3.plot(site_position_vals, turb_time, label='Feeder')
+ax3.set_ylim([0,20])
+ax3.set_ylabel('Turbine installation time, months')
+ax3.set_xlabel('Site position time, hours')
+ax3.legend()
 
-fig = plt.figure()
-df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='bar', ax = fig.gca())
-plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
-fig.savefig('install_time_comparison.png', bbox_inches='tight')
-
-
-
-
-
-
-
-
-
+fig.savefig('figures/site_position_param_sweep.png', bbox_inches='tight')
 
