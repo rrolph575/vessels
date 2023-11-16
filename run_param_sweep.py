@@ -27,8 +27,6 @@ initialize_library(LIBRARY)
 WEATHER = pd.read_csv('library/weather/example_weather.csv', parse_dates=['datetime']).set_index('datetime')
 num_turbines = 50
 
-#for i,f in enumerate(['shuttle_foreign_infreq_close.yaml', 'shuttle_foreign_infreq_far.yaml']):
-
 names = []
 
 total_monopile_installation_time_months = []
@@ -37,6 +35,52 @@ substructure_installation_cost = []
 turbine_installation_cost = []
 capex_breakdown_per_kW = []
 installation_times = []
+
+# Select baseline config and config to sweep over
+baseline_config = 'configs/shuttle_amer_freq'
+sweep_config = 'configs/feeder_freq'
+
+# Define parameter sweep
+param_vals = {
+    'site_position_time': [40, 20, 10]
+}
+
+# Define method to run ORBIT and output appropriate variables
+def orbit_run(config, LIBRARY=LIBRARY, WEATHER=WEATHER):
+    project = ProjectManager(config, library_path=LIBRARY, weather=WEATHER)
+    project.run()
+    
+    #print(project.detailed_outputs)
+    project.detailed_outputs['total_monopile_mass']/num_turbines
+
+    ## Categorize project actions
+    df = pd.DataFrame(project.actions)
+    action_phases = df['phase']
+    #print('Phases are: ' + action_phases.unique())
+    # df['action'] #### look through dataframe and see if monopile installation happens always before turbine installation !!! 
+
+    # Collect Results
+    installation_times += [project.project_time / (8760/12)]
+    capex_breakdown_per_kW += [project.capex_breakdown_per_kw]
+    substructure_installation_cost += [project.capex_breakdown_per_kw['Substructure Installation']]
+    turbine_installation_cost += [project.capex_breakdown_per_kw['Turbine Installation']]
+
+    ## write to excel file to use as input to gantt chart script
+    time_str = pd.to_datetime(WEATHER.index[0])
+    df.to_excel('action_logs/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.xlsx', index=False) 
+    df.to_csv('action_logs_csv/' + name + '_' + time_str.strftime('%m_%d_%Y') + '.csv', index=False)
+    
+    #print('\n \n Below summary is for the ' + name + ': \n \n')
+
+    monopiles = df.loc[df["phase"]=="MonopileInstallation"]  # Filter actions table to the MonopileInstallation phase.
+    monopile_duration = monopiles['time'].iloc[-1] - monopiles['time'].iloc[0] # Subtract first and last time stamp. Time is in hours
+    turbines = df.loc[df["phase"]=="TurbineInstallation"]  # Filter actions table to the TurbineInstallation phase.
+    turbine_duration = turbines['time'].iloc[-1] - turbines['time'].iloc[0]
+
+    total_monopile_installation_time_months += [monopile_duration / (8760/12)] # convert from hours to months
+    total_turbine_installation_time_months += [turbine_duration / (8760/12)] # convert from hours to months
+    
+
 
 for i,f in enumerate(os.listdir('configs/')):
     config_yaml_file = os.path.join('configs/', f)
