@@ -50,8 +50,8 @@ def orbit_run(config, param_val=None, LIBRARY=LIBRARY, WEATHER=WEATHER):
     
     mod_config = {
         'install_phases': {
-            'MonopileInstallation': '05/01/2010', 
-            'TurbineInstallation': ('MonopileInstallation', 1)
+            'MonopileInstallation': '05/01/2010', # Set monopile install start on May 1
+            'TurbineInstallation': ('MonopileInstallation', 1)  # Index turbine installation to end of monopile installatino
             }, #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
         'turbine': '15MW_generic_4sections'
         }
