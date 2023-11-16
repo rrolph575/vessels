@@ -35,10 +35,10 @@ installation_capex = {}
 capex_breakdown_per_kW = {}
 names = []
 
-total_monopile_installation_time_months = np.empty(8)
-total_turbine_installation_time_months = np.empty(8)
-substructure_installation_cost = np.empty(8)
-turbine_installation_cost = np.empty(8)
+total_monopile_installation_time_months = []
+total_turbine_installation_time_months = []
+substructure_installation_cost = []
+turbine_installation_cost = []
 
 #for i,f in enumerate(['shuttle_foreign_infreq_close.yaml', 'shuttle_foreign_infreq_far.yaml']):
 for i,f in enumerate(os.listdir('configs/')):
@@ -77,8 +77,8 @@ for i,f in enumerate(os.listdir('configs/')):
     installation_times[name] = project.project_time
     installation_capex[name] = project.installation_capex
     capex_breakdown_per_kW[name] = project.capex_breakdown_per_kw
-    substructure_installation_cost[i] = capex_breakdown_per_kW[name].get('Substructure Installation')
-    turbine_installation_cost[i] = capex_breakdown_per_kW[name].get('Turbine Installation')
+    substructure_installation_cost += [capex_breakdown_per_kW[name].get('Substructure Installation')]
+    turbine_installation_cost += [capex_breakdown_per_kW[name].get('Turbine Installation')]
 
     ## write to excel file to use as input to gantt chart script
     time_str = pd.to_datetime(WEATHER.index[0])
@@ -92,8 +92,8 @@ for i,f in enumerate(os.listdir('configs/')):
     turbines = df.loc[df["phase"]=="TurbineInstallation"]  # Filter actions table to the TurbineInstallation phase.
     turbine_duration = turbines['time'].iloc[-1] - turbines['time'].iloc[0]
  
-    total_monopile_installation_time_months[i] = monopile_duration / (8760/12) # convert from hours to months
-    total_turbine_installation_time_months[i] = turbine_duration / (8760/12) # convert from hours to months
+    total_monopile_installation_time_months += [monopile_duration / (8760/12)] # convert from hours to months
+    total_turbine_installation_time_months += [turbine_duration / (8760/12)] # convert from hours to months
     
     names.append(name)
     
