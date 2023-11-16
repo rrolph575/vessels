@@ -29,16 +29,16 @@ WEATHER = pd.read_csv('library/weather/example_weather.csv', parse_dates=['datet
 num_turbines = 50
 #def run():
 
-total_capex = {}
-installation_times = {}
-installation_capex = {}
-capex_breakdown_per_kW = {}
+
 names = []
 
 total_monopile_installation_time_months = []
 total_turbine_installation_time_months = []
 substructure_installation_cost = []
 turbine_installation_cost = []
+capex_breakdown_per_kW = []
+installation_times = []
+
 
 #for i,f in enumerate(['shuttle_foreign_infreq_close.yaml', 'shuttle_foreign_infreq_far.yaml']):
 for i,f in enumerate(os.listdir('configs/')):
@@ -57,7 +57,6 @@ for i,f in enumerate(os.listdir('configs/')):
     ## append mod_config to config
     run_config = ProjectManager.merge_dicts(config, mod_config)
     
-    
     project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
     project.run()
     
@@ -69,16 +68,12 @@ for i,f in enumerate(os.listdir('configs/')):
     action_phases = df['phase']
     #print('Phases are: ' + action_phases.unique())
     # df['action'] #### look through dataframe and see if monopile installation happens always before turbine installation !!! 
-    
-
    
     # Collect Results
-    total_capex[name] = project.total_capex
-    installation_times[name] = project.project_time
-    installation_capex[name] = project.installation_capex
-    capex_breakdown_per_kW[name] = project.capex_breakdown_per_kw
-    substructure_installation_cost += [capex_breakdown_per_kW[name].get('Substructure Installation')]
-    turbine_installation_cost += [capex_breakdown_per_kW[name].get('Turbine Installation')]
+    installation_times += [project.project_time / (8760/12)]
+    capex_breakdown_per_kW += [project.capex_breakdown_per_kw]
+    substructure_installation_cost += [project.capex_breakdown_per_kw['Substructure Installation']]
+    turbine_installation_cost += [project.capex_breakdown_per_kw['Turbine Installation']]
 
     ## write to excel file to use as input to gantt chart script
     time_str = pd.to_datetime(WEATHER.index[0])
@@ -106,7 +101,12 @@ for i,f in enumerate(os.listdir('configs/')):
     
 #return project
 
-df_install_times_and_cost = pd.DataFrame(data={'Scenario_name': names, 'Monopile_install_time_months': total_monopile_installation_time_months, 'Turbine_install_time_months': total_turbine_installation_time_months, 'Substructure_install_cost': substructure_installation_cost, 'Turbine_install_cost': turbine_installation_cost})
+df_install_times_and_cost = pd.DataFrame(data={'Scenario_name': names, 
+                                               'Total project installation time': installation_times,
+                                               'Monopile_install_time_months': total_monopile_installation_time_months, 
+                                               'Turbine_install_time_months': total_turbine_installation_time_months, 
+                                               'Substructure_install_cost': substructure_installation_cost, 
+                                               'Turbine_install_cost': turbine_installation_cost})
 
 df_install_times_and_cost = df_install_times_and_cost.set_index('Scenario_name')
 
@@ -122,7 +122,7 @@ fig.savefig('install_cost_comparison.png', bbox_inches='tight')
 
 
 fig = plt.figure()
-df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months']].plot(kind='bar', ax = fig.gca())
+df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='bar', ax = fig.gca())
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
 fig.savefig('install_time_comparison.png', bbox_inches='tight')
 
