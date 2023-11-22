@@ -4,8 +4,8 @@ jacksys_specs:
   leg_length: 85            # mm
   max_depth: 40             # m
   max_extension: 60         # m
-  speed_above_depth: 0.5    # m/min
-  speed_below_depth: 0.5    # m/min
+  speed_above_depth: 999    # m/min
+  speed_below_depth: 999    # m/min
 storage_specs:
   max_cargo: 8800     # t
   max_deck_load: 1.47    # t/m^2
