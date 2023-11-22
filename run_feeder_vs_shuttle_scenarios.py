@@ -37,6 +37,8 @@ substructure_installation_cost = []
 turbine_installation_cost = []
 capex_breakdown_per_kW = []
 installation_times = []
+time_per_mp = []
+time_per_turbine = []
 
 wtiv_feeder_position_time = 5
 wtiv_only_position_time = 5
@@ -97,6 +99,10 @@ for i,f in enumerate(os.listdir('configs_limit/')):
 
     total_monopile_installation_time_months += [monopile_duration / (8760/12)] # convert from hours to months
     total_turbine_installation_time_months += [turbine_duration / (8760/12)] # convert from hours to months
+
+    time_per_mp += [(monopile_duration / 24) / num_turbines]
+    time_per_turbine += [(turbine_duration / 24) / num_turbines]
+
     
     names.append(name)
     
@@ -114,7 +120,9 @@ df_install_times_and_cost = pd.DataFrame(data={'Scenario_name': names,
                                             'Monopile_install_time_months': total_monopile_installation_time_months, 
                                             'Turbine_install_time_months': total_turbine_installation_time_months, 
                                             'Substructure_install_cost': substructure_installation_cost, 
-                                            'Turbine_install_cost': turbine_installation_cost})
+                                            'Turbine_install_cost': turbine_installation_cost,
+                                            'Average time per monopile, days': time_per_mp,
+                                            'Average time per turbine, days': time_per_turbine})
 
 df_install_times_and_cost = df_install_times_and_cost.set_index('Scenario_name')
 
