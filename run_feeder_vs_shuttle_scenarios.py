@@ -40,8 +40,11 @@ installation_times = []
 time_per_mp = []
 time_per_turbine = []
 
-wtiv_feeder_position_time = 5
-wtiv_only_position_time = 5
+# Update ORBIT defaults
+wtiv_feeder_position_time = 5  # Time to position a WTIV and feeder combo at each turbine position; default=2
+wtiv_only_position_time = 5    # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
+mono_drive_rate = 2            # Rate (m/min) to drive monopiles; default=20
+
 
 for i,f in enumerate(os.listdir('configs_limit/')):
     config_yaml_file = os.path.join('configs_limit/', f)
@@ -66,9 +69,11 @@ for i,f in enumerate(os.listdir('configs_limit/')):
     project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
     if 'feeder' in name:
         print(name)
-        project.run(site_position_time = wtiv_feeder_position_time)
+        project.run(site_position_time = wtiv_feeder_position_time, 
+                    mono_drive_rate = mono_drive_rate)
     else:
-        project.run(site_position_time = wtiv_only_position_time)
+        project.run(site_position_time = wtiv_only_position_time,
+                    mono_drive_rate = mono_drive_rate)
     
     #print(project.detailed_outputs)
     project.detailed_outputs['total_monopile_mass']/num_turbines
