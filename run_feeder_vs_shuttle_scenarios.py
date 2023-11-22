@@ -41,9 +41,18 @@ time_per_mp = []
 time_per_turbine = []
 
 # Update ORBIT defaults
-wtiv_feeder_position_time = 5  # Time to position a WTIV and feeder combo at each turbine position; default=2
-wtiv_only_position_time = 5    # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
-mono_drive_rate = 2            # Rate (m/min) to drive monopiles; default=20
+wtiv_feeder_position_time = 5      # Time to position a WTIV and feeder combo at each turbine position; default=2
+wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
+mono_drive_rate = 2                # Rate (m/min) to drive monopiles; default=20
+tower_section_fasten_time = 2      # Fasten tower section to deck; default = 4
+tower_section_release_time = 1     # Release tower section from deck; default=3
+tower_section_attach_time = 2      # Attach tower sectin on site; dfault = 6
+nacelle_fasten_time = 2            # Fasten nacelle section to deck; default = 4
+nacelle_release_time = 1           # Release nacelle sectin on site; dfault = 3
+nacelle_attach_time = 2            # Attach nacelle sectin on site; dfault = 6
+blade_fasten_time = .75            # Fasten blade section to deck; default = 1.5
+blade_release_time = .5            # Release blade sectin on site; dfault = 1
+blade_attach_time = 1.5           # Attach bladesectin on site; dfault = 3.5
 
 
 for i,f in enumerate(os.listdir('configs_limit/')):
@@ -68,12 +77,29 @@ for i,f in enumerate(os.listdir('configs_limit/')):
     
     project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
     if 'feeder' in name:
-        print(name)
         project.run(site_position_time = wtiv_feeder_position_time, 
-                    mono_drive_rate = mono_drive_rate)
+                    mono_drive_rate = mono_drive_rate,
+                    tower_section_fasten_time = tower_section_fasten_time, 
+                    tower_section_release_time = tower_section_release_time,
+                    tower_section_attach_time = tower_section_attach_time,
+                    nacelle_fasten_time = nacelle_fasten_time,
+                    nacelle_release_time = nacelle_release_time,
+                    nacelle_attach_time = nacelle_attach_time,
+                    blade_fasten_time = blade_fasten_time,
+                    blade_release_time = blade_release_time,
+                    blade_attach_time = blade_attach_time)
     else:
-        project.run(site_position_time = wtiv_only_position_time,
-                    mono_drive_rate = mono_drive_rate)
+        project.run(site_position_time = wtiv_only_position_time, 
+                    mono_drive_rate = mono_drive_rate,
+                    tower_section_fasten_time = tower_section_fasten_time, 
+                    tower_section_release_time = tower_section_release_time,
+                    tower_section_attach_time = tower_section_attach_time,
+                    nacelle_fasten_time = nacelle_fasten_time,
+                    nacelle_release_time = nacelle_release_time,
+                    nacelle_attach_time = nacelle_attach_time,
+                    blade_fasten_time = blade_fasten_time,
+                    blade_release_time = blade_release_time,
+                    blade_attach_time = blade_attach_time)
     
     #print(project.detailed_outputs)
     project.detailed_outputs['total_monopile_mass']/num_turbines

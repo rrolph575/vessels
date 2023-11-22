@@ -42,7 +42,20 @@ sweep_config = 'configs/feeder_foreign_freq_far.yaml'
 # sweep_config = 'configs/feeder_freq.yaml'
 
 # Define parameter sweep
-site_position_vals = [40, 35, 30, 25, 20, 15, 10, 5] # site_position_time
+wtiv_feeder_position_time_vals = [40, 35, 30, 25, 20, 15, 10, 5] # site_position_time
+
+# Update ORBIT defaults
+wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
+mono_drive_rate = 2                # Rate (m/min) to drive monopiles; default=20
+tower_section_fasten_time = 2      # Fasten tower section to deck; default = 4
+tower_section_release_time = 1     # Release tower section from deck; default=3
+tower_section_attach_time = 2      # Attach tower sectin on site; dfault = 6
+nacelle_fasten_time = 2            # Fasten nacelle section to deck; default = 4
+nacelle_release_time = 1           # Release nacelle sectin on site; dfault = 3
+nacelle_attach_time = 2            # Attach nacelle sectin on site; dfault = 6
+blade_fasten_time = .75            # Fasten blade section to deck; default = 1.5
+blade_release_time = .5            # Release blade sectin on site; dfault = 1
+blade_attach_time = 1.5           # Attach bladesectin on site; dfault = 3.5
 
 # Define method to run ORBIT and output appropriate variables
 def orbit_run(config, param_val=None, LIBRARY=LIBRARY, WEATHER=WEATHER):
@@ -61,16 +74,34 @@ def orbit_run(config, param_val=None, LIBRARY=LIBRARY, WEATHER=WEATHER):
     run_config = ProjectManager.merge_dicts(config, mod_config)
 
     project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
+
     if param_val == None:
-        project.run()
+        project.run(site_position_time = wtiv_only_position_time, 
+                    mono_drive_rate = mono_drive_rate,
+                    tower_section_fasten_time = tower_section_fasten_time, 
+                    tower_section_release_time = tower_section_release_time,
+                    tower_section_attach_time = tower_section_attach_time,
+                    nacelle_fasten_time = nacelle_fasten_time,
+                    nacelle_release_time = nacelle_release_time,
+                    nacelle_attach_time = nacelle_attach_time,
+                    blade_fasten_time = blade_fasten_time,
+                    blade_release_time = blade_release_time,
+                    blade_attach_time = blade_attach_time)
     else:
-        project.run(site_position_time = param_val)
+        project.run(site_position_time = param_val, 
+                    mono_drive_rate = mono_drive_rate,
+                    tower_section_fasten_time = tower_section_fasten_time, 
+                    tower_section_release_time = tower_section_release_time,
+                    tower_section_attach_time = tower_section_attach_time,
+                    nacelle_fasten_time = nacelle_fasten_time,
+                    nacelle_release_time = nacelle_release_time,
+                    nacelle_attach_time = nacelle_attach_time,
+                    blade_fasten_time = blade_fasten_time,
+                    blade_release_time = blade_release_time,
+                    blade_attach_time = blade_attach_time)
 
     # Collect Results
     installation_times = project.project_time / (8760/12)
-    capex_breakdown_per_kW = project.capex_breakdown_per_kw
-    substructure_installation_cost = project.capex_breakdown_per_kw['Substructure Installation']
-    turbine_installation_cost = project.capex_breakdown_per_kw['Turbine Installation']
 
     df = pd.DataFrame(project.actions)
     monopiles = df.loc[df["phase"]=="MonopileInstallation"]  # Filter actions table to the MonopileInstallation phase.
@@ -91,7 +122,7 @@ install_time = []
 mp_time = []
 turb_time = []
 
-for vi in site_position_vals:
+for vi in wtiv_feeder_position_time_vals:
     i,m,t = orbit_run(sweep_config, param_val=vi)
     install_time += [i]
     mp_time += [m]
@@ -99,21 +130,21 @@ for vi in site_position_vals:
 
 fig,(ax1,ax2,ax3) = plt.subplots(1,3, figsize=(15,5))
 ax1.axhline(y=base_install_time, linestyle='--', label='Shuttle')
-ax1.plot(site_position_vals, install_time, label='Feeder')
+ax1.plot(wtiv_feeder_position_time_vals, install_time, label='Feeder')
 ax1.set_ylim([0,20])
 ax1.set_ylabel('Project installation time, months')
 ax1.set_xlabel('Site position time, hours')
 ax1.legend()
 
 ax2.axhline(y=base_mp_time, linestyle='--', label='Shuttle')
-ax2.plot(site_position_vals, mp_time, label='Feeder')
+ax2.plot(wtiv_feeder_position_time_vals, mp_time, label='Feeder')
 ax2.set_ylim([0,20])
 ax2.set_ylabel('Monopile installation time, months')
 ax2.set_xlabel('Site position time, hours')
 ax2.legend()
 
 ax3.axhline(y=base_turb_time, linestyle='--', label='Shuttle')
-ax3.plot(site_position_vals, turb_time, label='Feeder')
+ax3.plot(wtiv_feeder_position_time_vals, turb_time, label='Feeder')
 ax3.set_ylim([0,20])
 ax3.set_ylabel('Turbine installation time, months')
 ax3.set_xlabel('Site position time, hours')
