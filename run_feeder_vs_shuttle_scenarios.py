@@ -41,7 +41,7 @@ time_per_mp = []
 time_per_turbine = []
 
 # Update ORBIT defaults
-wtiv_feeder_position_time = 5      # Time to position a WTIV and feeder combo at each turbine position; default=2
+wtiv_feeder_position_time = 40      # Time to position a WTIV and feeder combo at each turbine position; default=2
 wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
 mono_drive_rate = 2                # Rate (m/min) to drive monopiles; default=20
 tower_section_fasten_time = 2      # Fasten tower section to deck; default = 4
