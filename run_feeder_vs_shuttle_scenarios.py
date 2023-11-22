@@ -38,8 +38,11 @@ turbine_installation_cost = []
 capex_breakdown_per_kW = []
 installation_times = []
 
-for i,f in enumerate(os.listdir('configs/')):
-    config_yaml_file = os.path.join('configs/', f)
+wtiv_feeder_position_time = 5
+wtiv_only_position_time = 5
+
+for i,f in enumerate(os.listdir('configs_limit/')):
+    config_yaml_file = os.path.join('configs_limit/', f)
     
     if os.path.isfile(config_yaml_file):
         name, extension = os.path.splitext(f)
@@ -47,7 +50,11 @@ for i,f in enumerate(os.listdir('configs/')):
     config = load_config(config_yaml_file)
     
     mod_config = {
-        'install_phases': ['MonopileInstallation', 'TurbineInstallation'], #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
+        # 'install_phases': ['MonopileInstallation', 'TurbineInstallation'], #https://github.com/WISDEM/ORBIT/blob/electrical-refactor/examples/Example%20-%20Dependent%20Phases.ipynb 
+        'install_phases': {
+            'MonopileInstallation': '05/01/2010', # Set monopile install start on May 1
+            'TurbineInstallation': ('MonopileInstallation', 1)  # Index turbine installation to end of monopile installatino
+            }, 
         'turbine': '15MW_generic_4sections'
         }
     
@@ -55,7 +62,11 @@ for i,f in enumerate(os.listdir('configs/')):
     run_config = ProjectManager.merge_dicts(config, mod_config)
     
     project = ProjectManager(run_config, library_path=LIBRARY, weather=WEATHER)
-    project.run()
+    if 'feeder' in name:
+        print(name)
+        project.run(site_position_time = wtiv_feeder_position_time)
+    else:
+        project.run(site_position_time = wtiv_only_position_time)
     
     #print(project.detailed_outputs)
     project.detailed_outputs['total_monopile_mass']/num_turbines
@@ -89,12 +100,12 @@ for i,f in enumerate(os.listdir('configs/')):
     
     names.append(name)
     
-    print(name)
-    print(df.loc[df['action']=='Transit'].count())
+    # print(name)
+    # print(df.loc[df['action']=='Transit'].count())
     
     transit_df = df.loc[df['action']=='Transit']
-    print('Total transit time for monopile installation '+ name + ':')
-    print(transit_df['duration'].sum())
+    # print('Total transit time for monopile installation '+ name + ':')
+    # print(transit_df['duration'].sum())
     
 #return project
 

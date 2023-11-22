@@ -39,6 +39,7 @@ installation_times = []
 # Select baseline config and config to sweep over
 baseline_config = 'configs/shuttle_amer_freq.yaml'
 sweep_config = 'configs/feeder_foreign_freq_far.yaml'
+# sweep_config = 'configs/feeder_freq.yaml'
 
 # Define parameter sweep
 site_position_vals = [40, 35, 30, 25, 20, 15, 10, 5] # site_position_time
