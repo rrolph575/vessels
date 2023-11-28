@@ -55,8 +55,8 @@ blade_release_time = .5            # Release blade sectin on site; dfault = 1
 blade_attach_time = 1.5           # Attach bladesectin on site; dfault = 3.5
 
 
-for i,f in enumerate(os.listdir('configs_limit/')):
-    config_yaml_file = os.path.join('configs_limit/', f)
+for i,f in enumerate(os.listdir('configs_renamed/')):
+    config_yaml_file = os.path.join('configs_renamed/', f)
     
     if os.path.isfile(config_yaml_file):
         name, extension = os.path.splitext(f)
@@ -162,18 +162,25 @@ print(df_install_times_and_cost)
 df_install_times_and_cost.to_csv('df_install_times_and_cost.csv')
 
 
-fig = plt.figure()
+fig, ax = plt.subplots()
 df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='bar', ax = fig.gca())
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
+ax.set_ylabel('Cost ($/kW)')
 fig.savefig('install_cost_comparison.png', bbox_inches='tight')
 
 
-fig = plt.figure()
+fig, ax = plt.subplots()
 df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='bar', ax = fig.gca())
+ax.set_ylabel('Installation Time (months)')
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
 fig.savefig('install_time_comparison.png', bbox_inches='tight')
 
 
+fig, ax = plt.subplots()
+total_install_capex = df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].sum(axis=1)
+total_install_capex.plot(kind='bar', ax=fig.gca())
+ax.set_ylabel('Turbie + Substructure Installation Cost ($/kW)')
+fig.savefig('turbine_plus_substructure_install_cost.png', bbox_inches='tight')
 
 
 
