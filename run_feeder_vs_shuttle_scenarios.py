@@ -55,8 +55,8 @@ blade_release_time = .5            # Release blade sectin on site; dfault = 1
 blade_attach_time = 1.5           # Attach bladesectin on site; dfault = 3.5
 
 
-for i,f in enumerate(os.listdir('configs_renamed/')):
-    config_yaml_file = os.path.join('configs_renamed/', f)
+for i,f in enumerate(os.listdir('configs_renamed_limit/')):
+    config_yaml_file = os.path.join('configs_renamed_limit/', f)
     
     if os.path.isfile(config_yaml_file):
         name, extension = os.path.splitext(f)
