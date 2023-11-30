@@ -37,8 +37,8 @@ capex_breakdown_per_kW = []
 installation_times = []
 
 # Select baseline config and config to sweep over
-baseline_config = 'configs_renamed/MP4shuttle060km_WTG3shuttle060km.yaml'
-sweep_config = 'configs_renamed/MP4feeder4_800km_WTG3feeder3_800km.yaml'
+baseline_config = 'configs_renamed_limit/MP6shuttle060km_WTG6shuttle060km.yaml' # shuttle
+sweep_config = 'configs_renamed_limit/MP6feeder_060km_WTG6feeder_060km.yaml' # feeder
 # sweep_config = 'configs/feeder_freq.yaml'
 
 # Define parameter sweep

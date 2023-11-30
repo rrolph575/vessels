@@ -163,23 +163,26 @@ df_install_times_and_cost.to_csv('df_install_times_and_cost.csv')
 
 
 fig, ax = plt.subplots()
-df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='bar', ax = fig.gca())
+df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='barh', ax = fig.gca())
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
 ax.set_ylabel('Cost ($/kW)')
+ax.invert_yaxis()
 fig.savefig('install_cost_comparison.png', bbox_inches='tight')
 
 
 fig, ax = plt.subplots()
-df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='bar', ax = fig.gca())
+df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='barh', ax = fig.gca())
 ax.set_ylabel('Installation Time (months)')
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
+ax.invert_yaxis()
 fig.savefig('install_time_comparison.png', bbox_inches='tight')
 
 
 fig, ax = plt.subplots()
 total_install_capex = df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].sum(axis=1)
-total_install_capex.plot(kind='bar', ax=fig.gca())
+total_install_capex.plot(kind='barh', ax=fig.gca())
 ax.set_ylabel('Turbie + Substructure Installation Cost ($/kW)')
+ax.invert_yaxis()
 fig.savefig('turbine_plus_substructure_install_cost.png', bbox_inches='tight')
 
 
