@@ -46,7 +46,9 @@ wtiv_feeder_position_time_vals = [40, 35, 30, 25, 20, 15, 10, 5] # site_position
 
 # Update ORBIT defaults
 wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
-mono_drive_rate = 2                # Rate (m/min) to drive monopiles; default=20
+mono_drive_rate = 25                # Rate (m/hr) to drive monopiles; default=20
+mono_release_time = 10             # Time to release monopile from deck
+tp_release_time = 10               # Time to release transition piece from deck
 tower_section_fasten_time = 2      # Fasten tower section to deck; default = 4
 tower_section_release_time = 1     # Release tower section from deck; default=3
 tower_section_attach_time = 2      # Attach tower sectin on site; dfault = 6
@@ -78,6 +80,8 @@ def orbit_run(config, param_val=None, LIBRARY=LIBRARY, WEATHER=WEATHER):
     if param_val == None:
         project.run(site_position_time = wtiv_only_position_time, 
                     mono_drive_rate = mono_drive_rate,
+                    mono_release_time = mono_release_time,
+                    tp_release_time = tp_release_time,
                     tower_section_fasten_time = tower_section_fasten_time, 
                     tower_section_release_time = tower_section_release_time,
                     tower_section_attach_time = tower_section_attach_time,
@@ -90,6 +94,8 @@ def orbit_run(config, param_val=None, LIBRARY=LIBRARY, WEATHER=WEATHER):
     else:
         project.run(site_position_time = param_val, 
                     mono_drive_rate = mono_drive_rate,
+                    mono_release_time = mono_release_time,
+                    tp_release_time = tp_release_time,
                     tower_section_fasten_time = tower_section_fasten_time, 
                     tower_section_release_time = tower_section_release_time,
                     tower_section_attach_time = tower_section_attach_time,

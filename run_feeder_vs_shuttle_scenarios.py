@@ -41,9 +41,11 @@ time_per_mp = []
 time_per_turbine = []
 
 # Update ORBIT defaults
-wtiv_feeder_position_time = 40      # Time to position a WTIV and feeder combo at each turbine position; default=2
+wtiv_feeder_position_time = 15      # Time to position a WTIV and feeder combo at each turbine position; default=2
 wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
-mono_drive_rate = 2                # Rate (m/min) to drive monopiles; default=20
+mono_drive_rate = 25               # Rate (m/hr) to drive monopiles; default=20
+mono_release_time = 10             # Time to release monopile from deck
+tp_release_time = 10               # Time to release transition piece from deck
 tower_section_fasten_time = 2      # Fasten tower section to deck; default = 4
 tower_section_release_time = 1     # Release tower section from deck; default=3
 tower_section_attach_time = 2      # Attach tower sectin on site; dfault = 6
@@ -79,6 +81,8 @@ for i,f in enumerate(os.listdir('configs_renamed_limit/')):
     if 'feeder' in name:
         project.run(site_position_time = wtiv_feeder_position_time, 
                     mono_drive_rate = mono_drive_rate,
+                    mono_release_time = mono_release_time,
+                    tp_release_time = tp_release_time,
                     tower_section_fasten_time = tower_section_fasten_time, 
                     tower_section_release_time = tower_section_release_time,
                     tower_section_attach_time = tower_section_attach_time,
@@ -91,6 +95,8 @@ for i,f in enumerate(os.listdir('configs_renamed_limit/')):
     else:
         project.run(site_position_time = wtiv_only_position_time, 
                     mono_drive_rate = mono_drive_rate,
+                    mono_release_time = mono_release_time,
+                    tp_release_time = tp_release_time,
                     tower_section_fasten_time = tower_section_fasten_time, 
                     tower_section_release_time = tower_section_release_time,
                     tower_section_attach_time = tower_section_attach_time,
