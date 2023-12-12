@@ -41,8 +41,8 @@ time_per_mp = []
 time_per_turbine = []
 
 # Update ORBIT defaults
-wtiv_feeder_position_time = 15      # Time to position a WTIV and feeder combo at each turbine position; default=2
-wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
+wtiv_feeder_position_time = 10      # Time to position a WTIV and feeder combo at each turbine position; default=2
+wtiv_only_position_time = 10        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
 mono_drive_rate = 25               # Rate (m/hr) to drive monopiles; default=20
 mono_release_time = 10             # Time to release monopile from deck
 tp_release_time = 10               # Time to release transition piece from deck
@@ -172,6 +172,7 @@ fig, ax = plt.subplots()
 df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='barh', ax = fig.gca())
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
 ax.set_ylabel('Cost ($/kW)')
+ax.set_xlim([0,250])
 ax.invert_yaxis()
 fig.savefig('install_cost_comparison.png', bbox_inches='tight')
 
@@ -180,6 +181,7 @@ fig, ax = plt.subplots()
 df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='barh', ax = fig.gca())
 ax.set_ylabel('Installation Time (months)')
 plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
+ax.set_xlim([0,20])
 ax.invert_yaxis()
 fig.savefig('install_time_comparison.png', bbox_inches='tight')
 
@@ -188,6 +190,7 @@ fig, ax = plt.subplots()
 total_install_capex = df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].sum(axis=1)
 total_install_capex.plot(kind='barh', ax=fig.gca())
 ax.set_ylabel('Turbie + Substructure Installation Cost ($/kW)')
+ax.set_xlim([0,425])
 ax.invert_yaxis()
 fig.savefig('turbine_plus_substructure_install_cost.png', bbox_inches='tight')
 

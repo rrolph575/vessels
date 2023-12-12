@@ -37,15 +37,15 @@ capex_breakdown_per_kW = []
 installation_times = []
 
 # Select baseline config and config to sweep over
-baseline_config = 'configs_renamed_limit/MP6shuttle060km_WTG6shuttle060km.yaml' # shuttle
-sweep_config = 'configs_renamed_limit/MP6feeder_060km_WTG6feeder_060km.yaml' # feeder
+baseline_config = 'configs_renamed_limit/MP4shuttle060km_WTG3shuttle060km.yaml' # shuttle
+sweep_config = 'configs_renamed_limit/MP4feeder_060km_WTG3feeder_060km.yaml' # feeder
 # sweep_config = 'configs/feeder_freq.yaml'
 
 # Define parameter sweep
-wtiv_feeder_position_time_vals = [40, 35, 30, 25, 20, 15, 10, 5] # site_position_time
+wtiv_feeder_position_time_vals = [60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10] # site_position_time
 
 # Update ORBIT defaults
-wtiv_only_position_time = 5        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
+wtiv_only_position_time = 10        # Time to position a WTIV (with no feeder) at each turbine position; default=2
 mono_drive_rate = 25                # Rate (m/hr) to drive monopiles; default=20
 mono_release_time = 10             # Time to release monopile from deck
 tp_release_time = 10               # Time to release transition piece from deck
