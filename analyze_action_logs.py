@@ -8,34 +8,19 @@ Created on Tue Nov 14 09:44:47 2023
 import pandas as pd
 import os
 
-name = 'shuttle_amer_freq'
 
 # Load file
-ifile = 'action_logs_csv/' + name + '_10_21_2009.csv'
+ifile = 'action_logs_csv/MP4feeder_060km_WTG3feeder_060km_10_21_2009_FeederPosTime50.csv'
 # Read file
 df = pd.read_csv(os.path.join(os.getcwd(),ifile))
 
 df_MonopileInstallation = df.loc[df['phase']=='MonopileInstallation']
 df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay']
 
-total_delay = df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay']['duration'].sum()
-print(total_delay)
+delay_monopile = df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay']['duration'].sum()
+print('Total delay for monopile installation' , delay_monopile)
 
 
-total_delay_not_enough_vessels = df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay: Not enough vessels for monopiles']['duration'].sum()
-print(total_delay_not_enough_vessels)
 
-
-name = 'shuttle_foreign_freq_far'# Load file
-ifile = 'action_logs_csv/' + name + '_10_21_2009.csv'
-# Read file
-df = pd.read_csv(os.path.join(os.getcwd(),ifile))
-
-df_MonopileInstallation = df.loc[df['phase']=='MonopileInstallation']
-df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay']
-
-total_delay = df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay']['duration'].sum()
-print(total_delay)
-
-total_delay_not_enough_vessels = df_MonopileInstallation.loc[df_MonopileInstallation['action']=='Delay: Not enough vessels for monopiles']['duration'].sum()
-print(total_delay_not_enough_vessels)
+total_project_delay = df.loc[df['action']=='Delay']['duration'].sum()
+print('Total project delay', total_project_delay)

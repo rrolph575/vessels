@@ -37,15 +37,17 @@ capex_breakdown_per_kW = []
 installation_times = []
 
 # Select baseline config and config to sweep over
-baseline_config = 'configs_renamed_limit/MP4shuttle060km_WTG3shuttle060km.yaml' # shuttle
-sweep_config = 'configs_renamed_limit/MP4feeder_060km_WTG3feeder_060km.yaml' # feeder
-# sweep_config = 'configs/feeder_freq.yaml'
+sweep_config = 'configs_renamed_limit_for_sweep/MP4feeder800km_WTG3feeder800km.yaml' # feeder
+
+
+baseline_config = 'configs_renamed_limit_for_sweep/MP4shuttle800km_WTG3shuttle800km.yaml' # shuttle
+
 
 # Define parameter sweep
 wtiv_feeder_position_time_vals = [60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10] # site_position_time
 
 # Update ORBIT defaults
-wtiv_only_position_time = 10        # Time to position a WTIV (with no feeder) at each turbine position; default=2
+wtiv_only_position_time = 5        # Time to position a WTIV (with no feeder) at each turbine position; default=2
 mono_drive_rate = 25                # Rate (m/hr) to drive monopiles; default=20
 mono_release_time = 10             # Time to release monopile from deck
 tp_release_time = 10               # Time to release transition piece from deck
@@ -133,28 +135,108 @@ for vi in wtiv_feeder_position_time_vals:
     install_time += [i]
     mp_time += [m]
     turb_time += [t]  
+    
 
-fig,(ax1,ax2,ax3) = plt.subplots(1,3, figsize=(15,5))
-ax1.axhline(y=base_install_time, linestyle='--', label='Shuttle')
-ax1.plot(wtiv_feeder_position_time_vals, install_time, label='Feeder')
-ax1.set_ylim([0,20])
-ax1.set_ylabel('Project installation time, months')
-ax1.set_xlabel('Site position time, hours')
-ax1.legend()
+
+## Draw a vertical line that is the crossover point between install time and site_position_time
+
+
+# y_closest = find the value in install time that is closest to base install time
+def closest_point_with_index(arr, target):
+    closest_index = None
+    closest = None
+    min_diff = float('inf')
+
+    for i, num in enumerate(arr):
+        diff = abs(num - target)
+        if diff < min_diff:
+            min_diff = diff
+            closest = num
+            closest_index = i
+
+    return closest, closest_index
+
+# find the intersection of the two lines between the horizontal line and the line equation fit between y1 and y2.
+def find_crossover_point_with_horizontal(m, b, y_value):
+    # For a horizontal line with constant y-value, the x-coordinate is calculated directly
+    x = (y_value - b) / m
+    return x, y_value
+
+
+
+
+## Monopile install time
+y_closest, index = closest_point_with_index(mp_time, base_mp_time)
+print(f"The closest point in the array to {base_mp_time} is {y_closest}")
+# find a neighboring point to make a line
+y2 = mp_time[index+1]
+# make a line equation that is fit between y1 and y2
+x_closest = wtiv_feeder_position_time_vals[index]
+x_2 = wtiv_feeder_position_time_vals[index + 1]
+m = (y_closest - y2)/(x_closest - x_2)
+b = y_closest - m*x_closest
+# Find crossover point
+crossover_point = find_crossover_point_with_horizontal(m, b, base_mp_time)
+print("Crossover point:", crossover_point)
+
+## Turbine install time
+y_closest, index = closest_point_with_index(turb_time, base_turb_time)
+# find a neighboring point to make a line
+y2 = turb_time[index+1]
+# make a line equation that is fit between y1 and y2
+x_closest = wtiv_feeder_position_time_vals[index]
+x_2 = wtiv_feeder_position_time_vals[index + 1]
+m = (y_closest - y2)/(x_closest - x_2)
+b = y_closest - m*x_closest
+# Find crossover point
+crossover_point = find_crossover_point_with_horizontal(m, b, base_turb_time)
+print("Crossover point:", crossover_point)
+
+## Project install time
+y_closest, index = closest_point_with_index(install_time, base_install_time)
+# find a neighboring point to make a line
+y2 = install_time[index+1]
+# make a line equation that is fit between y1 and y2
+x_closest = wtiv_feeder_position_time_vals[index]
+x_2 = wtiv_feeder_position_time_vals[index + 1]
+m = (y_closest - y2)/(x_closest - x_2)
+b = y_closest - m*x_closest
+# Find crossover point
+crossover_point = find_crossover_point_with_horizontal(m, b, base_install_time)
+print("Crossover point:", crossover_point)
+
+
+fig,(ax2,ax3,ax1) = plt.subplots(1,3, figsize=(15,5))
 
 ax2.axhline(y=base_mp_time, linestyle='--', label='Shuttle')
-ax2.plot(wtiv_feeder_position_time_vals, mp_time, label='Feeder')
+ax2.scatter(wtiv_feeder_position_time_vals, mp_time, label='Feeder')
+ax2.axvline(x=crossover_point[0], linestyle = '--')
+label = str(int(crossover_point[0])) + ' hours'
+ax2.text(crossover_point[0]+ 2,0.6,label,rotation=90, transform=ax2.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
 ax2.set_ylim([0,20])
 ax2.set_ylabel('Monopile installation time, months')
 ax2.set_xlabel('Site position time, hours')
 ax2.legend()
 
 ax3.axhline(y=base_turb_time, linestyle='--', label='Shuttle')
-ax3.plot(wtiv_feeder_position_time_vals, turb_time, label='Feeder')
+ax3.scatter(wtiv_feeder_position_time_vals, turb_time, label='Feeder')
+ax3.axvline(x=crossover_point[0], linestyle = '--')
+label = str(int(crossover_point[0])) + ' hours'
+ax3.text(crossover_point[0]+ 2,0.6,label,rotation=90, transform=ax3.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
 ax3.set_ylim([0,20])
 ax3.set_ylabel('Turbine installation time, months')
 ax3.set_xlabel('Site position time, hours')
 ax3.legend()
+
+ax1.axhline(y=base_install_time, linestyle='--', label='Shuttle')
+ax1.scatter(wtiv_feeder_position_time_vals, install_time, label='Feeder')
+ax1.axvline(x=crossover_point[0], linestyle = '--')
+label = str(int(crossover_point[0])) + ' hours'
+ax1.text(crossover_point[0]+ 2,0.3,label,rotation=90, transform=ax1.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
+ax1.set_ylim([0,20])
+ax1.set_ylabel('Project installation time, months')
+ax1.set_xlabel('Site position time, hours')
+ax1.legend()
 
 fig.savefig('figures/site_position_param_sweep.png', bbox_inches='tight')
 

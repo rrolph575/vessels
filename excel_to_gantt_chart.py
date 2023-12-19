@@ -22,13 +22,15 @@ import textwrap
 
 
 # problem parameters
-strategy = 'feeder_strategy_6kits'  # 'feeder_strategy_3(6)kits', 'shuttle_strategy_foreign(american)WTIV_3(6)kits'
+strategy = 'MP4feeder_060km_WTG3feeder_060km'  
 start_date  = '10/21/2009'
 start_date = pd.to_datetime(start_date)
 plot_based_on = 'agent'
 
 # read excel sheet and drop irrelevant stuff
-df = pd.read_excel(strategy + '_' + start_date.strftime('%m_%d_%Y') + '.xlsx')
+#df = pd.read_excel(strategy + '_' + start_date.strftime('%m_%d_%Y') + '.xlsx')
+ifile = 'action_logs/' + strategy + '_10_21_2009_FeederPosTime55.xlsx'
+df = pd.read_excel(ifile)
 df = df.drop('cost_multiplier', axis=1)
 df = df.drop('level', axis=1)
 #df = df.drop('phase_name', axis=1)
@@ -120,6 +122,7 @@ plt.gca().invert_yaxis()
 fig.subplots_adjust(left=0.32)
 
 ax.set_title(strategy)
+plt.xticks(np.arange(0, 530, 50))
 plt.savefig('figures/' + strategy + '.png', bbox_inches = 'tight')
 plt.show()
 

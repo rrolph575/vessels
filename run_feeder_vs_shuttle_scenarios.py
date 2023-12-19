@@ -41,8 +41,8 @@ time_per_mp = []
 time_per_turbine = []
 
 # Update ORBIT defaults
-wtiv_feeder_position_time = 10      # Time to position a WTIV and feeder combo at each turbine position; default=2
-wtiv_only_position_time = 10        # Time to position a WTIV (wiht no feeder) at each turbine position; default=2
+wtiv_feeder_position_time = 60     # Time to position a WTIV and feeder combo at each turbine position; default=2
+wtiv_only_position_time = 5        # Time to position a WTIV (with no feeder) at each turbine position; default=2
 mono_drive_rate = 25               # Rate (m/hr) to drive monopiles; default=20
 mono_release_time = 10             # Time to release monopile from deck
 tp_release_time = 10               # Time to release transition piece from deck
@@ -159,7 +159,8 @@ df_install_times_and_cost = pd.DataFrame(data={'Scenario_name': names,
                                             'Substructure_install_cost': substructure_installation_cost, 
                                             'Turbine_install_cost': turbine_installation_cost,
                                             'Average time per monopile, days': time_per_mp,
-                                            'Average time per turbine, days': time_per_turbine})
+                                            'Average time per turbine, days': time_per_turbine,
+                                            'Total install cost': np.array(substructure_installation_cost) + np.array(turbine_installation_cost)})
 
 df_install_times_and_cost = df_install_times_and_cost.set_index('Scenario_name')
 
@@ -169,30 +170,33 @@ df_install_times_and_cost.to_csv('df_install_times_and_cost.csv')
 
 
 fig, ax = plt.subplots()
-df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].plot(kind='barh', ax = fig.gca())
-plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
-ax.set_ylabel('Cost ($/kW)')
-ax.set_xlim([0,250])
+df_install_times_and_cost[['Substructure_install_cost', 'Turbine_install_cost', 'Total install cost']].plot(kind='barh', ax = fig.gca())
+plt.legend(loc='center left', bbox_to_anchor = (0.75, 0.22))
+ax.set_xlabel('Cost ($/kW)')
+ax.set_ylabel(' ')
+ax.set_xlim([0,420])
 ax.invert_yaxis()
 fig.savefig('install_cost_comparison.png', bbox_inches='tight')
 
 
 fig, ax = plt.subplots()
-df_install_times_and_cost[['Turbine_install_time_months', 'Monopile_install_time_months', 'Total project installation time']].plot(kind='barh', ax = fig.gca())
-ax.set_ylabel('Installation Time (months)')
-plt.legend(loc='center left', bbox_to_anchor = (1.0, 0.5))
-ax.set_xlim([0,20])
+df_install_times_and_cost[['Monopile_install_time_months', 'Turbine_install_time_months', 'Total project installation time']].plot(kind='barh', ax = fig.gca())
+ax.set_xlabel('Installation Time (months)')
+ax.set_ylabel(' ')
+plt.legend(loc='center left', bbox_to_anchor = (0.75, 0.22))
+ax.set_xlim([0,22])
 ax.invert_yaxis()
 fig.savefig('install_time_comparison.png', bbox_inches='tight')
 
 
-fig, ax = plt.subplots()
-total_install_capex = df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].sum(axis=1)
-total_install_capex.plot(kind='barh', ax=fig.gca())
-ax.set_ylabel('Turbie + Substructure Installation Cost ($/kW)')
-ax.set_xlim([0,425])
-ax.invert_yaxis()
-fig.savefig('turbine_plus_substructure_install_cost.png', bbox_inches='tight')
+# fig, ax = plt.subplots()
+# total_install_capex = df_install_times_and_cost[['Turbine_install_cost', 'Substructure_install_cost']].sum(axis=1)
+# total_install_capex.plot(kind='barh', ax=fig.gca())
+# ax.set_xlabel('Turbine + Substructure Installation Cost ($/kW)')
+# ax.set_xlim([0,425])
+# ax.invert_yaxis()
+# ax.set_ylabel(' ')
+# fig.savefig('turbine_plus_substructure_install_cost.png', bbox_inches='tight')
 
 
 
