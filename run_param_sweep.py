@@ -24,7 +24,7 @@ DIR = os.path.split(__file__)[0]
 LIBRARY= os.path.join(DIR, "library")
 initialize_library(LIBRARY)
 
-WEATHER = pd.read_csv('library/weather/example_weather.csv', parse_dates=['datetime']).set_index('datetime')
+WEATHER = pd.read_csv('library/weather/vineyard_wind_repr_with_whales.csv', parse_dates=['datetime']).set_index('datetime')
 num_turbines = 50
 
 names = []
