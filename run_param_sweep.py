@@ -210,9 +210,9 @@ fig,(ax2,ax3,ax1) = plt.subplots(1,3, figsize=(15,5))
 
 ax2.axhline(y=base_mp_time, linestyle='--', label='Shuttle')
 ax2.scatter(wtiv_feeder_position_time_vals, mp_time, label='Feeder')
-ax2.axvline(x=crossover_point[0], linestyle = '--')
+#ax2.axvline(x=crossover_point[0], linestyle = '--')
 label = str(int(crossover_point[0])) + ' hours'
-ax2.text(crossover_point[0]+ 2,0.6,label,rotation=90, transform=ax2.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
+#ax2.text(crossover_point[0]+ 2,0.6,label,rotation=90, transform=ax2.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
 ax2.set_ylim([0,20])
 ax2.set_ylabel('Monopile installation time, months')
 ax2.set_xlabel('Site position time, hours')
@@ -220,9 +220,9 @@ ax2.legend()
 
 ax3.axhline(y=base_turb_time, linestyle='--', label='Shuttle')
 ax3.scatter(wtiv_feeder_position_time_vals, turb_time, label='Feeder')
-ax3.axvline(x=crossover_point[0], linestyle = '--')
+#ax3.axvline(x=crossover_point[0], linestyle = '--')
 label = str(int(crossover_point[0])) + ' hours'
-ax3.text(crossover_point[0]+ 2,0.6,label,rotation=90, transform=ax3.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
+#ax3.text(crossover_point[0]+ 2,0.6,label,rotation=90, transform=ax3.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
 ax3.set_ylim([0,20])
 ax3.set_ylabel('Turbine installation time, months')
 ax3.set_xlabel('Site position time, hours')
@@ -230,13 +230,14 @@ ax3.legend()
 
 ax1.axhline(y=base_install_time, linestyle='--', label='Shuttle')
 ax1.scatter(wtiv_feeder_position_time_vals, install_time, label='Feeder')
-ax1.axvline(x=crossover_point[0], linestyle = '--')
+#ax1.axvline(x=crossover_point[0], linestyle = '--')
 label = str(int(crossover_point[0])) + ' hours'
-ax1.text(crossover_point[0]+ 2,0.3,label,rotation=90, transform=ax1.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
+#ax1.text(crossover_point[0]+ 2,0.3,label,rotation=90, transform=ax1.get_xaxis_text1_transform(0)[0], fontsize=12, fontweight='bold')
 ax1.set_ylim([0,20])
 ax1.set_ylabel('Project installation time, months')
 ax1.set_xlabel('Site position time, hours')
 ax1.legend()
+print('Crossover point for total project time: ', str(crossover_point[0]))
 
 fig.savefig('figures/site_position_param_sweep.png', bbox_inches='tight')
 

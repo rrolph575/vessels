@@ -174,7 +174,7 @@ df_install_times_and_cost[['Substructure_install_cost', 'Turbine_install_cost', 
 plt.legend(loc='center left', bbox_to_anchor = (0.75, 0.22))
 ax.set_xlabel('Cost ($/kW)')
 ax.set_ylabel(' ')
-ax.set_xlim([0,420])
+ax.set_xlim([0,440])
 ax.invert_yaxis()
 fig.savefig('install_cost_comparison.png', bbox_inches='tight')
 
